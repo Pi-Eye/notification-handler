@@ -102,6 +102,29 @@ class Notifications {
             }
         });
     }
+    SendDisconnectEmail() {
+        try {
+            const transporter = nodemailer_1.default.createTransport({
+                host: this.config_.mail_host,
+                port: this.config_.mail_port,
+                auth: {
+                    user: this.config_.mail_user,
+                    pass: this.config_.mail_pass
+                }
+            });
+            transporter.sendMail({
+                from: this.config_.from_email,
+                to: this.config_.emails,
+                subject: `${this.cam_name_} disconnected and did not reconnected after 30 seconds`,
+            }, (error) => {
+                if (error)
+                    console.warn(error);
+            });
+        }
+        catch (error) {
+            console.warn(error);
+        }
+    }
 }
 exports.default = Notifications;
 //# sourceMappingURL=notifications.js.map

@@ -104,6 +104,28 @@ export default class Notifications {
     } catch (error) {
       console.warn(error);
     }
+  }
 
+  SendDisconnectEmail() {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: this.config_.mail_host,
+        port: this.config_.mail_port,
+        auth: {
+          user: this.config_.mail_user,
+          pass: this.config_.mail_pass
+        }
+      });
+
+      transporter.sendMail({
+        from: this.config_.from_email,
+        to: this.config_.emails,
+        subject: `${this.cam_name_} disconnected and did not reconnected after 30 seconds`,
+      }, (error) => {
+        if (error) console.warn(error);
+      });
+    } catch (error) {
+      console.warn(error);
+    }
   }
 }
