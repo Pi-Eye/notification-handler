@@ -67,10 +67,10 @@ class Notifications {
                 const year = d.getFullYear();
                 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
                 const month = months[d.getMonth()];
-                const day = d.getDate();
-                const hour = d.getHours();
-                const min = d.getMinutes();
-                const sec = d.getSeconds();
+                const day = ("0" + d.getDate()).slice(-2);
+                const hour = ("0" + d.getHours()).slice(-2);
+                const min = ("0" + d.getMinutes()).slice(-2);
+                const sec = ("0" + d.getSeconds()).slice(-2);
                 const date = `${month} ${day}, ${year}`;
                 const time = `${hour}:${min}:${sec}`;
                 const img = `data:image/jpeg;base64, ${frame.toString("base64")}`;
@@ -115,7 +115,7 @@ class Notifications {
             transporter.sendMail({
                 from: this.config_.from_email,
                 to: this.config_.emails,
-                subject: `${this.cam_name_} disconnected and did not reconnected after 30 seconds`,
+                subject: `${this.cam_name_} disconnected and did not reconnect after 60 seconds`,
             }, (error) => {
                 if (error)
                     console.warn(error);
