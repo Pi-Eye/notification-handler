@@ -18,6 +18,7 @@ class Notifications {
     get events() { return this.events_; }
     constructor(cam_name, triggers, config) {
         this.events_ = new events_1.default;
+        this.startup_motion_ = false;
         this.start_count_ = 0;
         this.frames_ = 0;
         this.motion_ = false;
@@ -31,7 +32,13 @@ class Notifications {
             this.start_cache_.push(false);
         }
         this.events_.on("start", (frame, timestamp) => {
-            this.SendEmails(frame, timestamp);
+            if (this.startup_motion_) {
+                this.SendEmails(frame, timestamp);
+            }
+            else {
+                this.startup_motion_ = true;
+                this.SendStartupEmail(frame, timestamp);
+            }
         });
     }
     Frame(frame, timestamp, motion) {
@@ -87,6 +94,50 @@ class Notifications {
                     to: this.config_.emails,
                     subject: `${this.cam_name_}: Motion Was Detected At ${time} On ${date}`,
                     text: "Attached is the frame motion was detected on",
+                    attachments: [{
+                            filename: "frame.jpg",
+                            path: img,
+                            cid: "motion_img"
+                        }]
+                }, (error) => {
+                    if (error)
+                        console.warn(error);
+                });
+            }
+            catch (error) {
+                console.warn(error);
+            }
+        });
+    }
+    SendStartupEmail(frame, timestamp) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.config_.emails.length === 0)
+                return;
+            try {
+                const d = new Date(timestamp);
+                const year = d.getFullYear();
+                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                const month = months[d.getMonth()];
+                const day = ("0" + d.getDate()).slice(-2);
+                const hour = ("0" + d.getHours()).slice(-2);
+                const min = ("0" + d.getMinutes()).slice(-2);
+                const sec = ("0" + d.getSeconds()).slice(-2);
+                const date = `${month} ${day}, ${year}`;
+                const time = `${hour}:${min}:${sec}`;
+                const img = `data:image/jpeg;base64, ${frame.toString("base64")}`;
+                const transporter = nodemailer_1.default.createTransport({
+                    host: this.config_.mail_host,
+                    port: this.config_.mail_port,
+                    auth: {
+                        user: this.config_.mail_user,
+                        pass: this.config_.mail_pass
+                    }
+                });
+                transporter.sendMail({
+                    from: this.config_.from_email,
+                    to: this.config_.emails,
+                    subject: `${this.cam_name_}: First Time Motion Detected Was At ${time} On ${date}`,
+                    text: "This probably means the camera just connected after disconnection. Attached is the frame motion was detected on",
                     attachments: [{
                             filename: "frame.jpg",
                             path: img,

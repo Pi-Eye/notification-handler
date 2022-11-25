@@ -4,6 +4,7 @@ import { MotionTrigger, NotificationConfig, NotificationEvents } from "./types";
 export default class Notifications {
     private events_;
     get events(): TypedEmitter<NotificationEvents>;
+    private startup_motion_;
     private cam_name_;
     private triggers_;
     private config_;
@@ -16,5 +17,6 @@ export default class Notifications {
     constructor(cam_name: string, triggers: MotionTrigger, config: NotificationConfig);
     Frame(frame: Buffer, timestamp: number, motion: boolean): void;
     private SendEmails;
+    private SendStartupEmail;
     SendDisconnectEmail(): void;
 }
