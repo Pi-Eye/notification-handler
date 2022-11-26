@@ -17,6 +17,5 @@ export default class Notifications {
     constructor(cam_name: string, triggers: MotionTrigger, config: NotificationConfig);
     Frame(frame: Buffer, timestamp: number, motion: boolean): void;
     private SendEmails;
-    private SendStartupEmail;
     SendDisconnectEmail(): void;
 }
